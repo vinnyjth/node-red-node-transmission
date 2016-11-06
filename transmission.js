@@ -26,9 +26,11 @@ module.exports = function(RED) {
             this.Transmission = require("transmission");
             this.TransmissionAPI = new this.Transmission({
                 host: this.credentials.hostname,
-                port: '9091'
+                port: '9091',
+                username: this.credentials.username,
+                password: this.credentials.password
             });
-            
+
             node.log( "Reauthenticating Transmission API with " + this.credentials.hostname );
         }
     }
@@ -63,19 +65,19 @@ module.exports = function(RED) {
                 if (err) {
                     node.error("failed to fetch Transmission Torrents : " + err);
                     node.log( JSON.stringify( err ));
-                    
+
                     node.status({fill:"red",shape:"ring",text:"error"});
                     return;
                 }
-        
+
                 node.status({});
-    
+
                 node.status({fill:"green",shape:"dot",text:"processing"});
-    
+
                 msg.topic = "/transmission.v1/torrentData";
                 msg.payload = result;
                 node.send(msg);
-    
+
                 node.status({});
 
             })
@@ -107,19 +109,19 @@ module.exports = function(RED) {
                 if (err) {
                     node.error("failed to add Torrent Url : " + err);
                     node.log( JSON.stringify( err ));
-                    
+
                     node.status({fill:"red",shape:"ring",text:"error"});
                     return;
                 }
-        
+
                 node.status({});
-    
+
                 node.status({fill:"green",shape:"dot",text:"processing"});
-    
+
                 msg.topic = "/transmission.v1/torrentAdd";
                 msg.payload = result;
                 node.send(msg);
-    
+
                 node.status({});
 
             })
@@ -127,5 +129,5 @@ module.exports = function(RED) {
 
     }
     RED.nodes.registerType("Transmission Add Torrent", TransmissonTorrentAdd);
-   
+
 }
